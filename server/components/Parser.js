@@ -59,7 +59,7 @@ class Parser {
         }
         else if (this.match(TokenTypes.COMMAND)) node = this.command();
         else if (this.match('(')) node = this.groupedExpression();
-        else throw new Error(`Unknown token ${this.retrieveToken(0)}`);
+        else throw new Error(`Unknown token ${this.retrieveToken(0).literal}`);
         return node;
     }
 

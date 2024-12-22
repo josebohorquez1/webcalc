@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 
 const Calculator = () => {
     const [expression, setExpression] = useState('');
     const [result, setResult] = useState('');
+    const [history, setHistory] = useState([]);
 
+    useEffect(() => {
+        const stored_history = JSON.parse(localStorage.getItem('calculations')) || [];
+        setHistory(stored_history);
+    }, []);
     const handleInput = (e) => {
         let input = e.target.value;
-        const valid_characters = /^[0-9a-zA-Z+\-*!/.()%^{}\s]*$/;
+        const valid_characters = /^[0-ga-zA-Z+\-*!/.()%^{}\s]*$/;
         if (!input) {
             setResult("Input cannot be empty.");
         }
@@ -50,23 +55,6 @@ const Calculator = () => {
             setExpression(input);
             return;
         }
-
-        const commands = [
-            {"name": "sqrt", "command": "s"},
-            {"name": "log", "command": "l"}
-        ];
-        let command_found = false;
-        commands.forEach(element => {
-            if (input.slice(-1) === element.command) {
-                 input = input.slice(0, -1);
-                 input += element.name + "{}";
-                 command_found = true;
-            }
-        });
-        if (/^[a-zA-Z]$/.test(input.slice(-1)) && !command_found) {
-            setResult("Invalid command.");
-            return;
-        }
         setResult('');
         setExpression(input);
     };
@@ -97,6 +85,9 @@ const Calculator = () => {
                 const res = await response.json();
                 setResult(res.result.toLocaleString());
                 setExpression((Math.round((res.result) * Math.pow(10, 13)) / Math.pow(10, 13)).toLocaleString());
+                const new_history = [...history, {expression: res.expression, result: res.result}];
+                setHistory(new_history);
+                localStorage.setItem('calculations', JSON.stringify(new_history));
             }
             else {
                 const res = await response.json();

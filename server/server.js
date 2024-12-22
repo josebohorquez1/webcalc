@@ -39,7 +39,7 @@ app.post('/calculate', (req, res) => {
     if (!expression || typeof expression !== 'string') res.status(400).json({error: 'Expression must not be an empty string'});
     try {
         const result = calculate(expression);
-        return res.status(200).json({result: result});
+        return res.status(200).json({expression: expression, result: result});
     }
     catch (error) {
         return res.status(400).json({message: error.message});
